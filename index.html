@@ -7,12 +7,53 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Шапка з назвою -->
-    <!-- Блок поточного питання -->
-    <!-- Блок варіантів відповіді -->
+    <header>
+        <h1>Вікторина</h1>
+        <nav>
+            <a href="#current-question">Питання</a>
+            <a href="#history">Результати</a>
+        </nav>
+    </header>
+    
+    <main>
+        <!-- Блок поточного питання й варіантів відповіді -->
+        <section id="current-question">
+            <h2>Поточне питання</h2>
+            <p>Якою мовою написане питання?</p>
+
+            <input type="radio" id="answer1" name="question1">
+            <label for="answer1">українською</label>
+
+            <input type="radio" id="answer2" name="question1">
+            <label for="answer2">ukrainian</label>
+        </section>
+    
+
     <!-- Блок прогресу проходження -->
+     <section id="progress">
+        <h2>Прогрес проходження</h2>
+     </section>
+
     <!-- Блок результатів/історії спроб -->
+     <section id="history">
+            <h2>Історія спроб</h2>
+            
+            <article>
+            <h3>Спроба 1: 15.09.26 &emsp; 19:00</h3>
+            <p>Результат: 10/10 балів</p>
+            </article>
+
+            <article>
+            <h3>Спроба 2: 15.09.26 &emsp; 19:40</h3>
+            <p>Результат: 1/10 балів</p>
+            </article>
+     </section>
+     </main>
+
     <!-- Підвал -->
+     <footer>
+        <p>&copy; 2026 Карась Єгор</p>
+     </footer>
     <script src="js/app.js"></script>
 </body>
 </html>
