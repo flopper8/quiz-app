@@ -1,0 +1,100 @@
+/* глобальний reset на початку файлу стилів */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    background-color: #f4f4f9; 
+    color: #333333; 
+}
+
+
+header {
+    background-color: #5e35b1; 
+    padding: 24px 40px; 
+    border-bottom: 5px solid #fbc02d; 
+}
+
+header h1 {
+    margin: 0 0 16px 0; 
+    font-size: 2.2rem; 
+    color: #ffffff; 
+}
+
+header nav a {
+    color: #fbc02d; 
+    text-decoration: none; 
+    margin-right: 24px; 
+    font-weight: 600; 
+}
+
+header nav a:hover {
+    color: #ffffff; 
+}
+
+ main {
+    max-width: 800px; 
+    margin: 0 auto; 
+    padding: 32px 16px; 
+}
+
+section {
+    margin-bottom: 48px; 
+}
+
+section h2 {
+    color: #5e35b1; 
+    border-bottom: 2px solid #e0e0e0; 
+    padding-bottom: 8px;
+}
+
+#current-question {
+    padding: 32px;
+    border-radius: 12px;
+    text-align: center;
+    background-color: #ffffff; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+}
+
+ #current-question input[type="radio"] {
+    display: none;
+} 
+
+#current-question label {
+    display: block;
+    padding: 12px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    background-color: #f4f4f9;
+    border: 2px solid #e0e0e0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+#current-question label:hover {
+    background-color: #fbc02d;
+    border-color: #fbc02d;
+}
+
+#history article {
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 12px;
+}
+
+
+
+footer {
+    text-align: center; 
+    padding: 32px 16px; 
+    margin-top: 40px; 
+    font-size: 0.9rem; 
+    color: #6c757d; 
+    border-top: 1px solid #e0e0e0; 
+}
