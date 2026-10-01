@@ -17,16 +17,24 @@
     
     <main>
         <!-- Блок поточного питання й варіантів відповіді -->
-        <section id="current-question">
+<section id="current-question">
             <h2>Поточне питання</h2>
             <p>Якою мовою написане питання?</p>
 
-            <input type="radio" id="answer1" name="question1">
-            <label for="answer1">українською</label>
+    <div class="options">
+        <input type="radio" id="answer1" name="question1">
+        <label for="answer1">українською</label>
 
-            <input type="radio" id="answer2" name="question1">
-            <label for="answer2">ukrainian</label>
-        </section>
+        <input type="radio" id="answer2" name="question1">
+        <label for="answer2">ukrainian</label>
+
+        <input type="radio" id="answer2" name="question1">
+        <label for="answer2">ukrainisch</label>
+
+        <input type="radio" id="answer2" name="question1">
+        <label for="answer2">ucraino</label>
+    </div>
+</section>
     
 
     <!-- Блок прогресу проходження -->
@@ -38,6 +46,7 @@
      <section id="history">
             <h2>Історія спроб</h2>
             
+        <div class="history-grid">
             <article>
             <h3>Спроба 1: 15.09.26 &emsp; 19:00</h3>
             <p>Результат: 10/10 балів</p>
@@ -47,6 +56,12 @@
             <h3>Спроба 2: 15.09.26 &emsp; 19:40</h3>
             <p>Результат: 1/10 балів</p>
             </article>
+
+            <article>
+            <h3>Спроба 3: 15.09.26 &emsp; 23:23</h3>
+            <p>Результат: 8/10 балів</p>
+            </article>
+        </div>
      </section>
      </main>
 
