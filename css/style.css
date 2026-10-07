@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap');
 /* глобальний reset на початку файлу стилів */
 *, *::before, *::after {
     box-sizing: border-box;
@@ -5,7 +6,7 @@
 
 body {
     margin: 0;
-    font-family: system-ui, sans-serif;
+    font-family: 'Nunito', system-ui, sans-serif;
     font-size: 1rem;
     line-height: 1.5;
     background-color: #f4f4f9; 
@@ -90,7 +91,7 @@ section h2 {
 }
 
 #history article {
-    padding: 10px;
+    padding: 20px;
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -141,3 +142,80 @@ img {
     max-width: 100%;
     height: auto;
 }
+
+
+
+#current-question label {
+    display: flex; 
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem; 
+}
+
+
+
+#current-question label.correct {
+    background-color: #d4edda;
+    border-color: #1c7631;
+    color: #0f5132; 
+}
+
+#current-question label.correct .status-icon {
+    color: #1c7631;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+
+
+#current-question label.incorrect {
+    background-color: #f8d7da;
+    border-color: #b72c39;
+    color: #842029; 
+}
+
+#current-question label.incorrect .status-icon {
+    color: #b72c39;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+
+
+#current-question h2 {
+    margin-bottom: 24px;
+    border-bottom: none; 
+}
+
+
+
+/* Обгрунтування: щоб зробити проходження квізу захопливим, 
+номер поточного питання виділено дуже великим жирним шрифтом (2.5rem, weight 800). 
+Прогрес-бар використовує яскравий жовтий колір (#fbc02d), який візуально 
+нагороджує користувача за кожну відповідь і мотивує дійти до кінця. */
+.question-number {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #5e35b1;
+    text-align: center;
+    margin: 0 0 12px 0;
+}
+
+.question-number .total {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+.progress-bar {
+    height: 12px;
+    background-color: #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 32px;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #fbc02d;
+}
+

@@ -22,24 +22,28 @@
             <p>Якою мовою написане питання?</p>
 
     <div class="options">
-        <input type="radio" id="answer1" name="question1">
-        <label for="answer1">українською</label>
+    <input type="radio" id="answer1" name="question1" checked>
+    <label for="answer1" class="correct">українською <span class="status-icon">✓</span></label>
 
-        <input type="radio" id="answer2" name="question1">
-        <label for="answer2">ukrainian</label>
+    <input type="radio" id="answer2" name="question1">
+    <label for="answer2" class="incorrect">ukrainian <span class="status-icon">✗</span></label>
 
-        <input type="radio" id="answer2" name="question1">
-        <label for="answer2">ukrainisch</label>
+    <input type="radio" id="answer3" name="question1">
+    <label for="answer3">ukrainisch <span class="status-icon"></span></label>
 
-        <input type="radio" id="answer2" name="question1">
-        <label for="answer2">ucraino</label>
+    <input type="radio" id="answer4" name="question1">
+    <label for="answer4">ucraino <span class="status-icon"></span></label>
     </div>
 </section>
     
 
     <!-- Блок прогресу проходження -->
      <section id="progress">
-        <h2>Прогрес проходження</h2>
+        <!-- <h2>Прогрес проходження</h2> -->
+        <p class="question-number">Питання 1 <span class="total">/ 10</span></p>
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: 10%;"></div>
+    </div>
      </section>
 
     <!-- Блок результатів/історії спроб -->
@@ -72,4 +76,5 @@
     <script src="js/app.js"></script>
 </body>
 </html>
+
 
