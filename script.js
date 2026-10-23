@@ -20,6 +20,44 @@ const quizQuestions = [
 ];
 
 
+const staticExample = document.querySelector('#static-example');
+if (staticExample) {
+    staticExample.remove();
+}
+
+const listContainer = document.querySelector('#questions-list');
+
+
+
+//Функція рендеру: очищає контейнер і динамічно виводить список питань вікторини на сторінку.
+function renderQuestions(questions) {
+    listContainer.innerHTML = '';
+
+    for (const item of questions) {
+    const listItem = document.createElement('li');
+        listItem.textContent = item.question;
+
+        listItem.dataset.answer = item.answer;
+
+        if (Array.isArray(item.answer)) {
+            listItem.classList.add('multiple-choice'); 
+        } else {
+            listItem.classList.add('answered');  
+        }
+
+        listContainer.append(listItem);
+    }
+
+const countElement = document.querySelector('#questions-count');
+    if (countElement) {
+        countElement.textContent = `Кількість питань: ${questions.length}`;
+    }
+
+}
+renderQuestions(quizQuestions);
+
+
+
 // Функція перебирає масив питань вікторини, порівнює жорстко задану 
 // відповідь користувача з правильними варіантами та виводить результат у консоль.
 function checkAnswers() {
