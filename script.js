@@ -29,7 +29,8 @@ const listContainer = document.querySelector('#questions-list');
 
 
 
-//Функція рендеру: очищає контейнер і динамічно виводить список питань вікторини на сторінку.
+//Функція рендеру: очищає контейнер і динамічно
+// виводить список питань вікторини на сторінку.
 function renderQuestions(questions) {
     listContainer.innerHTML = '';
 
