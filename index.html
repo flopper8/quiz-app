@@ -29,22 +29,31 @@
         
         <!-- Блок поточного питання й варіантів відповіді -->
 <section id="current-question">
-            <h2>Поточне питання</h2>
+        <h2>Поточне питання</h2>
+        
+    <form id="quiz-form">    
             <p>Якою мовою написане питання?</p>
 
     <div class="options">
-    <input type="radio" id="answer1" name="question1" checked>
-    <label for="answer1" class="correct">українською <span class="status-icon">✓</span></label>
 
-    <input type="radio" id="answer2" name="question1">
-    <label for="answer2" class="incorrect">ukrainian <span class="status-icon">✗</span></label>
+    <input type="radio" id="answer1" name="question1" value="українською" required>
+    <label for="answer1">українською <span class="status-icon"></span></label>
 
-    <input type="radio" id="answer3" name="question1">
+    <input type="radio" id="answer2" name="question1" value="ukrainian" required>
+    <label for="answer2">ukrainian <span class="status-icon"></span></label>
+
+    <input type="radio" id="answer3" name="question1" value="ukrainisch" required>
     <label for="answer3">ukrainisch <span class="status-icon"></span></label>
 
-    <input type="radio" id="answer4" name="question1">
+    <input type="radio" id="answer4" name="question1" value="ucraino" required>
     <label for="answer4">ucraino <span class="status-icon"></span></label>
     </div>
+
+        <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
+            <button type="submit" id="submit-btn">Відповісти</button>
+            <button type="button" id="next-btn" style="display: none;">Наступне питання</button>
+        </div>
+    </form>
 </section>
     
 

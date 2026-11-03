@@ -103,3 +103,69 @@ const finalScore = calcScorePercent(8, 10);
 console.log(`Відсоток правильних відповідей: ${finalScore}%`);
 
 
+
+const historyAttempts = [];
+
+const form = document.querySelector('#quiz-form');
+
+const submitBtn = document.querySelector('#submit-btn');
+const nextBtn = document.querySelector('#next-btn');
+
+const historyContainer = document.querySelector('.history-grid');
+
+form.addEventListener('submit', (event) => {
+   event.preventDefault();
+
+const selectedRadio = document.querySelector('input[name="question1"]:checked');
+
+const userAnswer = selectedRadio.value;
+
+const correctAnswers = ["українською", "ukrainian", "ukrainisch", "ucraino"];
+const isCorrect = correctAnswers.includes(userAnswer);
+
+const newAttempt = {
+        date: new Date().toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' }), 
+        result: isCorrect ? "1/1 балів" : "0/1 балів"
+    };
+
+    historyAttempts.push(newAttempt);
+
+    renderHistory(historyAttempts);
+    
+    submitBtn.style.display = 'none';
+    nextBtn.style.display = 'block';
+
+    console.log('Користувач обрав ${userAnswer}'); 
+});
+
+nextBtn.addEventListener('click', () => {
+    form.reset();
+
+    
+    nextBtn.style.display = 'none';
+    submitBtn.style.display = 'block';
+
+    console.log('Інтерфейс скинуто, готові до наступного питання!');
+});
+
+
+function renderHistory(attempts) {
+    historyContainer.innerHTML = '';
+
+    for (let i = 0; i < attempts.length; i++) {
+        const attempt = attempts[i];
+        
+        const article = document.createElement('article');
+        
+        const h3 = document.createElement('h3');
+        h3.textContent = `Спроба ${i + 1}: ${attempt.date}`;
+        
+        const p = document.createElement('p');
+        p.textContent = `Результат: ${attempt.result}`;
+        
+        article.append(h3);
+        article.append(p);
+        
+        historyContainer.append(article);
+    }
+}

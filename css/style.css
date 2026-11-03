@@ -72,7 +72,9 @@ section h2 {
 }
 
  #current-question input[type="radio"] {
-    display: none;
+    position: absolute;
+    opacity: 0;
+    z-index: -1;
 } 
 
 #current-question label {
@@ -87,6 +89,11 @@ section h2 {
 
 #current-question label:hover {
     background-color: #fbc02d;
+    border-color: #fbc02d;
+}
+
+#current-question input[type="radio"]:checked + label {
+    background-color: #fbc02d; 
     border-color: #fbc02d;
 }
 
