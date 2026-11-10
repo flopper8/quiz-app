@@ -30,6 +30,119 @@ if (staticExample) {
     staticExample.remove();
 }
 
+const API_URL = 'https://opentdb.com/api.php?amount=10&type=multiple';
+
+function decodeHTML(html) {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}
+
+// Отримую питання для вікторини з публічного API: Open Trivia Database
+async function loadQuizData() {
+    console.log('Починаємо завантаження даних...');
+    
+    const submitBtn = document.querySelector('#submit-btn');
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Завантаження...';
+    }
+
+
+    try {
+        const response = await fetch(API_URL, { cache: 'no-store' });
+
+        if (!response.ok) {
+            throw new Error(`Помилка сервера: код ${response.status}`);
+        }
+
+        console.log('Статус HTTP перевірено, все ОК!');
+
+        const data = await response.json();
+        console.log('Отримані дані з API:', data);
+
+        quizQuestions.length = 0; 
+
+        for (const item of data.results) {
+            const qText = decodeHTML(item.question);
+            const correct = decodeHTML(item.correct_answer);
+            const incorrect = item.incorrect_answers.map(ans => decodeHTML(ans));
+
+            const allOptions = [...incorrect, correct];
+            
+            allOptions.sort(() => Math.random() - 0.5);
+
+            quizQuestions.push({
+                question: qText,
+                options: allOptions,
+                answer: correct
+            });
+        }
+        renderQuestions(quizQuestions);
+
+        const firstQ = quizQuestions[0];
+        const questionTitle = document.querySelector('#current-question p');
+        if (questionTitle) questionTitle.textContent = firstQ.question;
+        
+        const radioInputs = document.querySelectorAll('#current-question input[type="radio"]');
+        const radioLabels = document.querySelectorAll('#current-question label');
+        
+        for (let i = 0; i < radioInputs.length; i++) {
+            radioInputs[i].value = firstQ.options[i];
+            radioLabels[i].textContent = firstQ.options[i];
+        }
+
+    } catch (error) {
+        console.error('Деталі помилки для розробника:', error);
+
+        const questionsSection = document.querySelector('#all-questions-section');
+        
+        let errorMsg = document.querySelector('#error-message');
+        if (!errorMsg) {
+            errorMsg = document.createElement('p');
+            errorMsg.id = 'error-message';
+            errorMsg.style.color = '#b12323';
+            errorMsg.style.fontWeight = 'bold';
+            errorMsg.style.textAlign = 'center';
+            errorMsg.style.fontSize = '1.2rem';
+            
+            questionsSection.prepend(errorMsg); 
+        }
+        errorMsg.textContent = 'Не вдалося завантажити питання вікторини. Будь ласка, перевірте інтернет-з\'єднання та спробуйте пізніше.';
+        
+
+        let retryBtn = document.querySelector('#retry-btn');
+        if (!retryBtn) {
+            retryBtn = document.createElement('button');
+            retryBtn.id = 'retry-btn';
+            retryBtn.textContent = 'Спробувати знову';
+            retryBtn.style.display = 'block';
+            retryBtn.style.margin = '10px auto';
+            
+            
+            retryBtn.addEventListener('click', () => {
+                errorMsg.remove();
+                retryBtn.remove();
+                loadQuizData();
+            });
+            errorMsg.after(retryBtn);
+        }
+
+        const currentQuestionSection = document.querySelector('#current-question');
+        if (currentQuestionSection) {
+            currentQuestionSection.style.display = 'none';
+        }
+    }finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Відповісти';
+        }
+    }
+}
+//loadQuizData();
+setTimeout(loadQuizData, 4000);
+
 const listContainer = document.querySelector('#questions-list');
 
 
