@@ -1,20 +1,25 @@
 console.log('script.js підключено');
 
+
 const quizQuestions = [
     { 
         question: "Якою мовою написане питання?", 
+        options: ["українською", "ukrainian", "ukrainisch", "ucraino"],
         answer: ["українською","ukrainian","ukrainisch","ucraino"] 
     },
     { 
         question: "Яка столиця України?", 
+        options: ["Львів", "Київ", "Одеса", "Харків"],
         answer: "Київ" 
     },
     { 
         question: "Скільки кольорів на прапорі України?", 
+        options: ["один", "два", "три", "чотири"],
         answer: "два" 
     },
     { 
         question: "Яка найбільша планета Сонячної системи?", 
+        options: ["Марс", "Венера", "Юпітер", "Сатурн"],
         answer: "Юпітер" 
     }
 ];
@@ -26,7 +31,6 @@ if (staticExample) {
 }
 
 const listContainer = document.querySelector('#questions-list');
-
 
 
 //Функція рендеру: очищає контейнер і динамічно
@@ -56,7 +60,6 @@ const countElement = document.querySelector('#questions-count');
 
 }
 renderQuestions(quizQuestions);
-
 
 
 // Функція перебирає масив питань вікторини, порівнює жорстко задану 
@@ -103,6 +106,8 @@ const finalScore = calcScorePercent(8, 10);
 console.log(`Відсоток правильних відповідей: ${finalScore}%`);
 
 
+let currentQuestionIndex = 0; 
+
 
 const historyAttempts = [];
 
@@ -113,17 +118,29 @@ const nextBtn = document.querySelector('#next-btn');
 
 const historyContainer = document.querySelector('.history-grid');
 
+
+// Обробник надсилання форми: зупиняє перезавантаження, перевіряє відповідь, 
+// зберігає результат в історію та перемикає кнопки вікторини
 form.addEventListener('submit', (event) => {
-   event.preventDefault();
+    event.preventDefault();
 
-const selectedRadio = document.querySelector('input[name="question1"]:checked');
 
-const userAnswer = selectedRadio.value;
+    const selectedRadio = document.querySelector('input[name="question1"]:checked');
 
-const correctAnswers = ["українською", "ukrainian", "ukrainisch", "ucraino"];
-const isCorrect = correctAnswers.includes(userAnswer);
+    const userAnswer = selectedRadio.value;
 
-const newAttempt = {
+    
+    const currentQuestionObj = quizQuestions[currentQuestionIndex];
+    let isCorrect = false;
+    
+
+    if (Array.isArray(currentQuestionObj.answer)) {
+        isCorrect = currentQuestionObj.answer.includes(userAnswer);
+    } else {
+        isCorrect = (userAnswer === currentQuestionObj.answer);
+    }
+
+    const newAttempt = {
         date: new Date().toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' }), 
         result: isCorrect ? "1/1 балів" : "0/1 балів"
     };
@@ -135,17 +152,55 @@ const newAttempt = {
     submitBtn.style.display = 'none';
     nextBtn.style.display = 'block';
 
-    console.log('Користувач обрав ${userAnswer}'); 
+    console.log(`Користувач обрав ${userAnswer}`); 
 });
 
+// Обробник другої події, очищає форму та повертає інтерфейс 
+// до початкового стану для наступного питання
 nextBtn.addEventListener('click', () => {
-    form.reset();
 
-    
-    nextBtn.style.display = 'none';
-    submitBtn.style.display = 'block';
+    currentQuestionIndex++; 
 
-    console.log('Інтерфейс скинуто, готові до наступного питання!');
+    if (currentQuestionIndex < quizQuestions.length) {
+        
+        const currentObj = quizQuestions[currentQuestionIndex];
+
+        const questionTitle = document.querySelector('#current-question p');
+        if (questionTitle) {
+            questionTitle.textContent = currentObj.question;
+        }
+
+        const radioInputs = document.querySelectorAll('#current-question input[type="radio"]');
+        const radioLabels = document.querySelectorAll('#current-question label');
+
+        for (let i = 0; i < radioInputs.length; i++) {
+            if (currentObj.options[i]) {
+                radioInputs[i].value = currentObj.options[i];
+                radioLabels[i].textContent = currentObj.options[i];
+            }
+        }
+
+        form.reset();
+        nextBtn.style.display = 'none';
+        submitBtn.style.display = 'block';
+
+        console.log('Інтерфейс скинуто, готові до наступного питання!');
+    } else {
+        console.log('Вікторину завершено!');
+        const questionTitle = document.querySelector('#current-question p');
+        if (questionTitle) {
+            questionTitle.textContent = "Вікторину завершено! Дякуємо за участь.";
+        }
+        
+        const optionsContainer = document.querySelector('.options');
+        if (optionsContainer) {
+            optionsContainer.style.display = 'none';
+        }
+
+        form.reset();
+        nextBtn.style.display = 'none';
+        submitBtn.style.display = 'none';
+    }
 });
 
 
