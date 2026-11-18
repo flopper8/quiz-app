@@ -85,25 +85,25 @@
 
     <!-- Блок результатів/історії спроб -->
      <section id="history">
-            <h2>Історія спроб</h2>
-            
-        <div class="history-grid">
-            <article>
-            <h3>Спроба 1: 15.09.26 &emsp; 19:00</h3>
-            <p>Результат: 10/10 балів</p>
-            </article>
+        <h2>Історія спроб</h2>
+        
+        <p v-if="dbError" style="color: #b72c39; background-color: #f8d7da; padding: 12px; border-radius: 6px; text-align: center;">
+            {{ dbError }}
+        </p>
 
-            <article>
-            <h3>Спроба 2: 15.09.26 &emsp; 19:40</h3>
-            <p>Результат: 1/10 балів</p>
-            </article>
+        <p v-if="results.length === 0" style="text-align: center; color: #666;">
+            Поки що немає збережених спроб. Пройдіть вікторину, щоб побачити результат!
+        </p>
 
-            <article>
-            <h3>Спроба 3: 15.09.26 &emsp; 23:23</h3>
-            <p>Результат: 8/10 балів</p>
+        <div class="history-grid" v-else>
+            <article v-for="(attempt, index) in results" :key="attempt.id">
+                <h3>Спроба {{ index + 1 }}: {{ attempt.date }}</h3>
+                <p>Результат: {{ attempt.score }}/{{ attempt.total }} балів</p>
+                <button type="button" @click="deleteResult(attempt.id)">Видалити</button>
             </article>
         </div>
-     </section>
+    </section>
+
      </main>
 
     <!-- Підвал -->

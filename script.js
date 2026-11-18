@@ -13,6 +13,95 @@ function decodeHTML(html) {
     return txt.value;
 }
 
+const STORAGE_KEY = 'quizResults';
+
+function saveToLocalStorage(items) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+
+function loadFromLocalStorage() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch (error) {
+        console.error('Пошкоджені дані в localStorage:', error);
+        return [];
+    }
+}
+
+const DB_NAME = 'QuizDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'results';
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+            reject(new Error('Ваш браузер не підтримує IndexedDB.'));
+            return;
+        }
+
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+            }
+        };
+
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function addItem(item) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).put(item);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+async function getAllItems() {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const request = tx.objectStore(STORE_NAME).getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function deleteItem(id) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+async function migrateFromLocalStorage() {
+    if (localStorage.getItem('migrated') === 'true') {
+        return;
+    }
+
+    const existingItems = await getAllItems();
+    const localItems = loadFromLocalStorage();
+
+    if (existingItems.length === 0 && localItems.length > 0) {
+        for (const item of localItems) {
+            await addItem(item);
+        }
+        console.log(`Мігровано ${localItems.length} запис(ів) із localStorage в IndexedDB.`);
+    }
+
+    localStorage.setItem('migrated', 'true');
+}
+
 const QuizQuestion = {
     props: ['question', 'options', 'questionIndex'], 
     emits: ['answer'],
@@ -49,7 +138,9 @@ const quizApp = Vue.createApp({
             score: 0,
             currentQuestionIndex: 0,
             isAnswering: false,
-            quizQuestions: []
+            quizQuestions: [],
+            results:[],
+            dbError: ''
         };
     },
 
@@ -79,11 +170,57 @@ const quizApp = Vue.createApp({
                     this.currentQuestionIndex++; 
                     this.isAnswering = false; 
                 } else {
+                    this.saveResult();
                     alert(`Вікторину завершено! Твій рахунок: ${this.score} з ${this.quizQuestions.length}`);
                 }
             }, 500);
         },
         
+       async loadResults() {
+            try {
+                const items = await getAllItems();
+                items.sort((a, b) => b.score - a.score);
+                this.results = items;
+                this.dbError = '';
+            } catch (error) {
+                console.error('Помилка читання з IndexedDB:', error);
+                this.dbError = 'Не вдалося відкрити локальну базу даних. Історія спроб може бути недоступна.';
+            }
+        },
+
+        async saveResult() {
+            const newResult = {
+                date: new Date().toLocaleString('uk-UA', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
+                score: this.score,
+                total: this.quizQuestions.length
+            };
+
+            try {
+                await addItem(newResult);
+                await this.loadResults();
+            } catch (error) {
+                console.error('Помилка збереження в IndexedDB:', error);
+                this.dbError = 'Не вдалося зберегти результат у локальну базу даних.';
+            }
+        },
+
+        async deleteResult(id) {
+            try {
+                await deleteItem(id);
+                await this.loadResults();
+            } catch (error) {
+                console.error('Помилка видалення з IndexedDB:', error);
+                this.dbError = 'Не вдалося видалити запис із локальної бази даних.';
+            }
+        },
+
+
         async loadQuizData() {
             try {
                 const response = await fetch('https://opentdb.com/api.php?amount=10&type=multiple', { cache: 'no-store' });
@@ -115,7 +252,14 @@ const quizApp = Vue.createApp({
             }
         }
     },
-    mounted() {
+   async mounted() {
+        try {
+            await migrateFromLocalStorage();
+            await this.loadResults();
+        } catch (error) {
+            console.error('Помилка ініціалізації IndexedDB:', error);
+            this.dbError = 'Не вдалося відкрити локальну базу даних. Можливо, IndexedDB заблокована налаштуваннями браузера.';
+        }
         this.loadQuizData();
     }
 });
@@ -433,3 +577,4 @@ function renderHistory(attempts) {
     }
 }
     */
+
