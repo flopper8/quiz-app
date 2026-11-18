@@ -1,29 +1,129 @@
+// Обраний фреймворк: Vue 3.
+// так як дл мене це все в новинку я звернувся до ШІ за порадою
+// що саме мені обратиі в чому  перевага обраного варіанта, ось
+// що він мені сказав
+//Обґрунтування: Vue дозволяє працювати з існиючою HTML-розміткою
+//через директиви без необхідності компіляції JSX через Babel у браузері.
+
 console.log('script.js підключено');
 
+function decodeHTML(html) {
+    const txt = document.createElement("textarea");
+    txt.innerHTML = html;
+    return txt.value;
+}
 
-const quizQuestions = [
-    { 
-        question: "Якою мовою написане питання?", 
-        options: ["українською", "ukrainian", "ukrainisch", "ucraino"],
-        answer: ["українською","ukrainian","ukrainisch","ucraino"] 
+const QuizQuestion = {
+    props: ['question', 'options', 'questionIndex'], 
+    emits: ['answer'],
+    template: `
+        <div class="quiz-question-item">
+            <p style="text-align: center; margin-bottom: 20px; font-weight: bold;">{{ question }}</p>
+            
+            <div class="options">
+                <template v-for="(option, optIndex) in options" :key="optIndex">
+                    <input 
+                        type="radio" 
+                        :id="'q-' + questionIndex + '-opt-' + optIndex" 
+                        :name="'question-' + questionIndex" 
+                        :value="option" 
+                        @change="$emit('answer', option)"
+                    >
+                    <label :for="'q-' + questionIndex + '-opt-' + optIndex">
+                        {{ option }}
+                    </label>
+                </template>
+            </div>
+        </div>
+    `
+};
+
+const quizApp = Vue.createApp({
+    
+    components: {
+        QuizQuestion
     },
-    { 
-        question: "Яка столиця України?", 
-        options: ["Львів", "Київ", "Одеса", "Харків"],
-        answer: "Київ" 
+
+    data() {
+        return {
+            score: 0,
+            currentQuestionIndex: 0,
+            isAnswering: false,
+            quizQuestions: []
+        };
     },
-    { 
-        question: "Скільки кольорів на прапорі України?", 
-        options: ["один", "два", "три", "чотири"],
-        answer: "два" 
+
+    computed: {
+        progressPercentage() {
+            if (this.quizQuestions.length === 0) return 0;
+            return ((this.currentQuestionIndex + 1) / this.quizQuestions.length) * 100;
+        }
     },
-    { 
-        question: "Яка найбільша планета Сонячної системи?", 
-        options: ["Марс", "Венера", "Юпітер", "Сатурн"],
-        answer: "Юпітер" 
+
+    methods: {
+        handleAnswer(selectedOption, correctAnswer) {
+
+            if (this.isAnswering) return; 
+            this.isAnswering = true;
+            
+            let isCorrect = (selectedOption === correctAnswer);
+            
+            if (isCorrect) {
+                this.score++; 
+            }
+            console.log(`Обрано: ${selectedOption}. Правильно? ${isCorrect}. Поточний бал: ${this.score}`);
+            
+
+            setTimeout(() => {
+                if (this.currentQuestionIndex < this.quizQuestions.length - 1) {
+                    this.currentQuestionIndex++; 
+                    this.isAnswering = false; 
+                } else {
+                    alert(`Вікторину завершено! Твій рахунок: ${this.score} з ${this.quizQuestions.length}`);
+                }
+            }, 500);
+        },
+        
+        async loadQuizData() {
+            try {
+                const response = await fetch('https://opentdb.com/api.php?amount=10&type=multiple', { cache: 'no-store' });
+                
+                if (!response.ok) {
+                    throw new Error(`Помилка сервера: код ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+
+                this.quizQuestions = data.results.map(item => {
+                    const qText = decodeHTML(item.question);
+                    const correct = decodeHTML(item.correct_answer);
+                    const incorrect = item.incorrect_answers.map(ans => decodeHTML(ans));
+                    
+                    const allOptions = [...incorrect, correct];
+                    allOptions.sort(() => Math.random() - 0.5);
+                    
+                    return {
+                        question: qText,
+                        options: allOptions,
+                        answer: correct
+                    };
+                });
+            } catch (error) {
+                console.error('Деталі помилки для розробника:', error);
+                alert("Не вдалося завантажити питання вікторини. Будь ласка, перевірте інтернет-з'єднання.");
+            }
+        }
+    },
+    mounted() {
+        this.loadQuizData();
     }
-];
+});
+quizApp.mount('main');
 
+/*функцію рендеру (renderQuestions), ручне отримання даних та 
+   обробники подій (addEventListener) замінено реактивним компонентом Vue 
+   та директивою v-for.
 
 const staticExample = document.querySelector('#static-example');
 if (staticExample) {
@@ -32,11 +132,7 @@ if (staticExample) {
 
 const API_URL = 'https://opentdb.com/api.php?amount=10&type=multiple';
 
-function decodeHTML(html) {
-    const txt = document.createElement("textarea");
-    txt.innerHTML = html;
-    return txt.value;
-}
+
 
 // Отримую питання для вікторини з публічного API: Open Trivia Database
 async function loadQuizData() {
@@ -140,8 +236,7 @@ async function loadQuizData() {
         }
     }
 }
-//loadQuizData();
-setTimeout(loadQuizData, 4000);
+    loadQuizData();
 
 const listContainer = document.querySelector('#questions-list');
 
@@ -337,3 +432,4 @@ function renderHistory(attempts) {
         historyContainer.append(article);
     }
 }
+    */

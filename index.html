@@ -6,8 +6,10 @@
     <title>Вікторина</title>
     <link rel="stylesheet" href="css/style.css">
 
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="script.js" defer></script>
 </head>
+
 <body>
     <header>
         <h1>Вікторина</h1>
@@ -19,16 +21,31 @@
     
     <main>
 
-        <section id="all-questions-section">
-            <h2>Всі питання вікторини</h2>
-            <p id="questions-count">Кількість питань: 0</p>
-            <ul id="questions-list">
-                <li id="static-example">Статичне питання-заглушка</li>
+        <section id="current-question"> 
+            <h2>Поточне питання</h2>
+            <p id="questions-count" style="margin-bottom: 20px;">
+                <!-- Питання {{ currentQuestionIndex + 1 }} з {{ quizQuestions.length }} -->
+            </p>
+            
+            <ul id="questions-list" style="list-style: none; padding: 0;">
+                <quiz-question 
+                    v-for="(item, index) in quizQuestions" 
+                    :key="index"
+                    :question-index="index"
+                    v-show="index === currentQuestionIndex" 
+                    :question="item.question"
+                    :options="item.options"
+                    @answer="handleAnswer($event, item.answer)">
+                </quiz-question>
             </ul>
+
+            <div style="text-align: center; margin-top: 20px; font-size: 1.5rem; font-weight: bold; color: #5e35b1;">
+                Поточний рахунок: {{ score }}
+            </div>
         </section>
         
         <!-- Блок поточного питання й варіантів відповіді -->
-<section id="current-question">
+<!-- <section id="current-question">
         <h2>Поточне питання</h2>
         
     <form id="quiz-form">    
@@ -54,15 +71,15 @@
             <button type="button" id="next-btn" style="display: none;">Наступне питання</button>
         </div>
     </form>
-</section>
+</section> -->
     
 
     <!-- Блок прогресу проходження -->
-     <section id="progress">
+     <section id="progress" v-if="quizQuestions.length > 0">
         <!-- <h2>Прогрес проходження</h2> -->
-        <p class="question-number">Питання 1 <span class="total">/ 10</span></p>
+        <p class="question-number">Питання {{currentQuestionIndex + 1}} <span class="total">/ {{quizQuestions.length}}</span></p>
     <div class="progress-bar">
-        <div class="progress-fill" style="width: 10%;"></div>
+        <div class="progress-fill" :style="{ width: progressPercentage + '%' }"></div>
     </div>
      </section>
 
@@ -95,9 +112,3 @@
      </footer>
 </body>
 </html>
-
-
-
-
-
-
